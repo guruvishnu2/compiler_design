@@ -3,7 +3,7 @@
   using namespace std;
   #include <string.h>
   #include <stdio.h>
-  #include "./myapp.hpp"
+  #include "y.tab.h"
   extern int line;
   extern int stringNumber;
 %}
