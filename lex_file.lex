@@ -12,21 +12,24 @@
 
 %%
 
-"*/"   {
-             printf("error in line %d : unopened comment section\n",line);
-         }
+"*/"                    {
+                            printf("error in line %d : unopened comment section\n",line);
+                        }
 
-\n              {++line;stringNumber=0;}
-"//".*             {}
+\n                     {    
+                                ++line;
+                                stringNumber=0;
+                        }
+"//".*                  {}
 
-"/*".*"*/"   {}
+"/*".*"*/"              {}
 
-\/\*([^*]|(\*[^*/]))*   {
-                      printf("error in line %d : unclosed comment section\n",line);
-                       }
+\/\*([^*]|(\*[^*/]))*  {
+                            printf("error in line %d : unclosed comment section\n",line);
+                        }
 
-\t                    {}
-" "                   {}
+\t    {}
+" "   {}
 
 
 "print"               {
@@ -267,38 +270,43 @@
                        stringNumber += yyleng;
                        return TOKEN_ID;}
 
--?[0-9]*              {long mynumber = atol(yytext);
-                       if(mynumber > 2147483648 || mynumber < -2147483649 || yyleng > 10)
-                        {
+-?[0-9]*              {
+                        long mynumber = atol(yytext);
+                        if(mynumber > 2147483648 || mynumber < -2147483649 || yyleng > 10){
                           printf("error in line %d : size of variable is out of range\n",line);
                           exit(0);
                         }
                         yylval.string=strdup(yytext);
-                       stringNumber += yyleng;
+                        stringNumber += yyleng;
                         return TOKEN_INTCONST;
                       }
+\'[ a-zA-Z0-9\"`~!@#$%^&\*()_\-=\+\]\[\{\},\.?]\' { 
+                                                    yylval.string=strdup(yytext);
+                                                    stringNumber += yyleng;
+                                                    return TOKEN_CHARCONST;
+                                                }
 
 
-\'[ a-zA-Z0-9\"`~!@#$%^&\*()_\-=\+\]\[\{\},\.?]\' { yylval.string=strdup(yytext);
-                          stringNumber += yyleng;
-                          return TOKEN_CHARCONST;}
+\"[ a-zA-Z0-9\'`~!@#$%^&\*()_\-=\+\]\[\{\},\.?]*(\\[ntvrfb\\"'a0])*\" {
+                                                    yylval.string=strdup(yytext);
+                                                    stringNumber += yyleng;
+                                                    return TOKEN_STRINGCONST;
+                                                }
 
-
-\"[ a-zA-Z0-9\'`~!@#$%^&\*()_\-=\+\]\[\{\},\.?]*(\\[ntvrfb\\"'a0])*\" {yylval.string=strdup(yytext);
-                         stringNumber += yyleng;
-                         return TOKEN_STRINGCONST;}
-
-[a-zA-Z]+[0-9a-zA-Z|_]* {if(yyleng>31) {
-                          printf("error in line %d : wrong id definition\n",line);
-                          exit(0);
-                        }
-                        yylval.string=strdup(yytext);
-                        stringNumber += yyleng;
-                        return TOKEN_ID;
+[a-zA-Z]+[0-9a-zA-Z|_]* {
+                            if(yyleng>31) {
+                                printf("error in line %d : wrong id definition\n",line);
+                                exit(0);
+                            }
+                            yylval.string=strdup(yytext);
+                            stringNumber += yyleng;
+                            return TOKEN_ID;
                       }
 
-[0-9]+[0-9a-zA-Z|_]* {printf("error in line %d : wrong id definition\n",line);
-                              exit(0);}
+[0-9]+[0-9a-zA-Z|_]* {
+                            printf("error in line %d : wrong id definition\n",line);
+                            exit(0);
+                    }
 
 
 [-+]?[0-9]+"."[0-9]+ {
